@@ -22,7 +22,15 @@ function Register() {
     setEmail('')
     setPassword('')
     axios
-      .post(server + '/users/new',newUserDetails)
+      .post(server + '/users/new',
+        newUserDetails, 
+        {
+          withCredentials:true,
+          headers:{
+            "Content-Type" :"application/json"
+            },
+        }
+      )
       .then(res=>{
         console.log(res.data.message)
         console.log(res.data)
@@ -40,6 +48,9 @@ function Register() {
     axios
     .get(`${server}/items/my`,{
       withCredentials:true,
+      headers:{
+        "Content-Type" :"application/json"
+      },
     })
     .then(res=>{
       console.log("Item feached :", res)

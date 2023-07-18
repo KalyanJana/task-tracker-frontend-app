@@ -46,6 +46,9 @@ function Login() {
     axios
     .get(`${server}/items/my`,{
       withCredentials:true,
+      headers:{
+        "Content-Type" :"application/json"
+      },
     })
     .then(res=>{
       console.log("Item feached :", res)
