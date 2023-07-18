@@ -8,7 +8,7 @@ import Todoform from '../components/Todoform';
 
 function Home() {
 
-  const {isAuthenticated, user, setUser,items, setItems} = useContext(Context)
+  const {isAuthenticated, user, setUser, items, setItems, loading, setLoading } = useContext(Context)
 
   useEffect(() => {
     const saveItems = async () => {
@@ -47,10 +47,12 @@ function Home() {
 
   return (
     <div className='home'>
+      {loading && <p className='loading'>Loading..</p>}
 
-      {items.map((item) => (
+      {!loading && items.map((item) => (
         <Todoform key={item._id} item={item} />
       ))}
+      
 
     </div>
   );
