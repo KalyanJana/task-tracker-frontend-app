@@ -5,9 +5,14 @@ import axios from 'axios';
 import { Context, server } from '../index.js';
 import { v4 as uuidv4 } from 'uuid'; // Import uuidv4 for generating temporary IDs
 import useClickOutside from './useClickOutside';
+import { DragDropContext, Draggable } from 'react-beautiful-dnd'
+import { StrictModeDroppable as Droppable } from '../helpers/StrictModeDroppable'
 
 function Todoform({ item }) {
 
+
+
+  
   const { isAuthenticated, items, setItems, user, setUser } = useContext(Context);
   const [toggle, setToggle] = useState(false);
   const [updatedTitle, setUpdatedTitle] = useState(item.title);
@@ -98,11 +103,26 @@ function Todoform({ item }) {
     return id;
   };
 
+    const handleOnDragEnd = (result) =>{
+    if(!result?.destination) return
+
+    const newTasks = [...tasks]
+
+    const [ reOrderedTask] = newTasks.splice(result.source.index, 1)
+
+    newTasks.splice(result.destination.index, 0, reOrderedTask)
+
+
+    const updatedItems = items.map((i) => (i._id === item._id ? { ...i, tasks: newTasks } : i));
+
+    setItems(updatedItems);
+  }
+
   return (
-    <div className='todo-form' ref={inputRef}>
+    <div className='todo-form'>
       
       {!item.isItAddColumn && 
-        <div className='todo-form-header'>
+        <div className='todo-form-header' ref={inputRef}>
           <input
             type='text'
             value={updatedTitle}
@@ -118,10 +138,27 @@ function Todoform({ item }) {
         </div>
       }
       
-      {tasks.map((task) => (
-        <Addtaskform key={task._id} task={task} parentId={item._id} />
-      ))}
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Droppable droppableId='task-lists'>
+          {(provided) => (
+            <section ref={provided.innerRef} {...provided.droppableProps}>
+              {
+                tasks.map((task, index) => (
+                  <Draggable key={task._id} draggableId={task._id.toString()} index={index}>
+                    {(provided) => (
+                      <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        <Addtaskform task={task} parentId={item._id} />
+                      </div>
+                    )}
+                  </Draggable>
+                ))
+              }
+              {provided.placeholder}
+            </section>
+          )}
+        </Droppable>
 
+      </DragDropContext>
       {
       item.isItAddColumn ? 
       <h4 className='todo-form-btn' onClick={addNewItemHandler}>

@@ -6,6 +6,11 @@ import useClickOutside from './useClickOutside';
 
 function AddTaskForm({ task, parentId }) {
 
+
+
+
+
+  
   const [textValue, setTextValue] = useState(task.task || '');
   const [bgColor, setBgColor] = useState(task.taskBgColor);
   const [textHeight, setTextHeight] = useState(task.taskHeight);
@@ -36,7 +41,7 @@ function AddTaskForm({ task, parentId }) {
 
   const handleColorClick = (color) => {
     setBgColor(color);
-    updateTasksHandler(color); // Pass the color to updateTasksHandler
+    updateTasksHandler(color, textValue); // Pass the color to updateTasksHandler
   };
 
   const deleteHandler = () => {
@@ -54,14 +59,14 @@ function AddTaskForm({ task, parentId }) {
     }
   };
 
-  const updateTasksHandler = (updatedBgColor) => {
+  const updateTasksHandler = (updatedBgColor, updatedTextValue) => {
     const currentItem = items.find((item) => item._id === parentId);
     if (currentItem) {
       const updatedTasks = currentItem.tasks.map((taskObj) => {
         if (taskObj._id === task._id) {
           return {
             ...taskObj,
-            task: textValue,
+            task: updatedTextValue,
             taskBgColor: updatedBgColor,
             taskHeight: (textValue.length/20)*5,
           };
@@ -69,10 +74,10 @@ function AddTaskForm({ task, parentId }) {
         return taskObj;
       });
 
-  const updatedItems = items.map((item) => {
-      if (item._id === parentId) {
-          return { ...item, tasks: updatedTasks };
-        }
+      const updatedItems = items.map((item) => {
+        if (item._id === parentId) {
+            return { ...item, tasks: updatedTasks };
+          }
         return item;
       });
       setItems(updatedItems);
@@ -95,7 +100,7 @@ function AddTaskForm({ task, parentId }) {
     const textarea = inputRef.current.querySelector('textarea');
 
     setTextHeight(textarea.scrollHeight);
-  }, [textValue]);
+  }, [textValue, textHeight]);
 
   useEffect(() => {
     // Update the text color based on the background color
@@ -103,9 +108,10 @@ function AddTaskForm({ task, parentId }) {
      
   }, [bgColor]);
   
+   
 
   return (
-    <div className='add-task-form' ref={inputRef} onBlur={updateTasksHandler}>
+    <div className='add-task-form' ref={inputRef} onBlur ={()=>updateTasksHandler(bgColor, textValue)}>
       <div className="textarea-wrapper" style={{ backgroundColor: bgColor }}>
         <div className={clickedTaskBox ? 'delete-icon' : 'remove'} style={{ backgroundColor: bgColor }}>
           <FaTrash onClick={deleteHandler} />

@@ -130,7 +130,9 @@
   user-select: none;
   /* gap: 0.8rem; */
   /* border: 1px solid red; */
+  margin-bottom: 0.8rem;
 }
+
 
 .textarea-wrapper {
   display: flex;
